@@ -18,7 +18,12 @@ const translations = {
     howItWorks: 'How it works',
     privacy: 'Privacy',
     contact: 'Contact',
-    language: 'العربية'
+    language: 'العربية',
+    // Report section translations
+    reportGenerated: 'Report generated at',
+    clearResults: 'Clear Results',
+    analyzing: 'Analyzing charity website...',
+    error: 'Error'
   },
   ar: {
     title: 'درع الخيرية',
@@ -34,17 +39,31 @@ const translations = {
     howItWorks: 'كيف يعمل',
     privacy: 'الخصوصية',
     contact: 'اتصل بنا',
-    language: 'English'
+    language: 'English',
+    // Report section translations
+    reportGenerated: 'تم إنشاء التقرير في',
+    clearResults: 'مسح النتائج',
+    analyzing: 'جاري تحليل موقع الجمعية الخيرية...',
+    error: 'خطأ'
   }
 }
 
-// Color mapping for display
+// Color mapping for display (same for both languages)
 const colorMap: Record<string, { label: string; bg: string; text: string }> = {
   green: { label: '🟢', bg: 'bg-green-50', text: 'text-green-700' },
   yellow: { label: '🟡', bg: 'bg-yellow-50', text: 'text-yellow-700' },
   orange: { label: '🟠', bg: 'bg-orange-50', text: 'text-orange-700' },
   red: { label: '🔴', bg: 'bg-red-50', text: 'text-red-700' },
   gray: { label: '⚪', bg: 'bg-gray-50', text: 'text-gray-500' }
+}
+
+// Check category translations
+const categoryTranslations: Record<string, { en: string; ar: string }> = {
+  'Domain': { en: 'Domain', ar: 'المجال' },
+  'Security': { en: 'Security', ar: 'الأمان' },
+  'Presence': { en: 'Presence', ar: 'الحضور' },
+  'Registration': { en: 'Registration', ar: 'التسجيل' },
+  'Content': { en: 'Content', ar: 'المحتوى' }
 }
 
 function App() {
@@ -103,6 +122,13 @@ function App() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  // Get translated category
+  const getCategoryTranslation = (category: string): string => {
+    const cat = categoryTranslations[category]
+    if (!cat) return category
+    return language === 'ar' ? cat.ar : cat.en
   }
 
   return (
@@ -220,7 +246,7 @@ function App() {
 
           {isLoading && (
             <div className="mt-8 text-center">
-              <p className="text-gray-600 text-lg">Analyzing charity website...</p>
+              <p className="text-gray-600 text-lg">{t.analyzing}</p>
               <div className="mt-2 flex justify-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#2f7a4f] border-t-transparent"></div>
               </div>
@@ -229,7 +255,7 @@ function App() {
 
           {error && (
             <div className="mt-8 p-4 border-2 border-red-300 rounded-lg bg-red-50 text-red-700">
-              <p className="font-bold">Error</p>
+              <p className="font-bold">{t.error}</p>
               <p>{error}</p>
             </div>
           )}
@@ -240,12 +266,13 @@ function App() {
                 <h3 className="text-xl font-bold text-gray-800">
                   🔍 {report.domain}
                 </h3>
-                <p className="text-sm text-gray-500">Report generated at {new Date().toLocaleString()}</p>
+                <p className="text-sm text-gray-500">{t.reportGenerated} {new Date().toLocaleString()}</p>
               </div>
 
               <div className="space-y-2">
                 {report.checks.map((check: any, index: number) => {
                   const style = colorMap[check.color] || colorMap.gray
+                  const categoryTrans = getCategoryTranslation(check.category)
                   return (
                     <div
                       key={index}
@@ -258,7 +285,7 @@ function App() {
                         <span className="text-xl">{style.label}</span>
                         <div>
                           <p className={`font-semibold ${style.text}`}>
-                            {check.category}: {check.name}
+                            {categoryTrans}: {check.name}
                           </p>
                           <p className="text-sm text-gray-600">{check.meaning}</p>
                         </div>
@@ -280,7 +307,7 @@ function App() {
                 onClick={() => setReport(null)}
                 className="mt-6 text-[#2f7a4f] text-lg font-bold hover:underline w-full text-center"
               >
-                Clear Results
+                {t.clearResults}
               </button>
             </div>
           )}
