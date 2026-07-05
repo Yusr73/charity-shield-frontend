@@ -39,12 +39,12 @@ const translations = {
 }
 
 // Color mapping for display
-const colorMap: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  green: { bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', label: '✅' },
-  yellow: { bg: 'bg-yellow-50', text: 'text-yellow-700', border: 'border-yellow-200', label: '⚠️' },
-  orange: { bg: 'bg-orange-50', text: 'text-orange-700', border: 'border-orange-200', label: '🔶' },
-  red: { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', label: '🔴' },
-  gray: { bg: 'bg-gray-50', text: 'text-gray-500', border: 'border-gray-200', label: '⚪' }
+const colorMap: Record<string, { label: string; bg: string; text: string }> = {
+  green: { label: '🟢', bg: 'bg-green-50', text: 'text-green-700' },
+  yellow: { label: '🟡', bg: 'bg-yellow-50', text: 'text-yellow-700' },
+  orange: { label: '🟠', bg: 'bg-orange-50', text: 'text-orange-700' },
+  red: { label: '🔴', bg: 'bg-red-50', text: 'text-red-700' },
+  gray: { label: '⚪', bg: 'bg-gray-50', text: 'text-gray-500' }
 }
 
 function App() {
@@ -105,16 +105,12 @@ function App() {
     }
   }
 
-  const getColorStyle = (color: string) => {
-    return colorMap[color] || colorMap.gray
-  }
-
   return (
-    <div
+    <div 
       className="min-h-screen flex items-center justify-center p-4 border-[12px] border-[#2f7a4f]"
       dir={language === 'ar' ? 'rtl' : 'ltr'}
     >
-      <div className="w-full max-w-3xl bg-[#fcfaf5] rounded-3xl p-8 relative"
+      <div className="w-full max-w-2xl bg-[#fcfaf5] rounded-3xl p-8 relative"
         style={{
           boxShadow: '8px 8px 0 #2f7a4f',
           border: '3px solid #2f7a4f'
@@ -179,8 +175,9 @@ function App() {
             </button>
           </form>
 
-          <div className="flex justify-center items-center gap-6 mt-8 text-lg text-gray-700 flex-wrap">
-            <span className="px-4 py-1 whitespace-nowrap"
+          <div className="flex justify-center items-center gap-6 mt-8 text-lg text-gray-700">
+            <span
+              className="px-4 py-1 whitespace-nowrap"
               style={{
                 border: '2px dashed #2f7a4f',
                 borderRadius: '30px',
@@ -189,7 +186,8 @@ function App() {
             >
               {t.free}
             </span>
-            <span className="px-4 py-1 whitespace-nowrap"
+            <span
+              className="px-4 py-1 whitespace-nowrap"
               style={{
                 border: '2px dashed #2f7a4f',
                 borderRadius: '30px',
@@ -198,7 +196,8 @@ function App() {
             >
               {t.instant}
             </span>
-            <span className="px-4 py-1 whitespace-nowrap"
+            <span
+              className="px-4 py-1 whitespace-nowrap"
               style={{
                 border: '2px dashed #2f7a4f',
                 borderRadius: '30px',
@@ -207,7 +206,8 @@ function App() {
             >
               {t.private}
             </span>
-            <span className="px-4 py-1 whitespace-nowrap"
+            <span
+              className="px-4 py-1 whitespace-nowrap"
               style={{
                 border: '2px dashed #2f7a4f',
                 borderRadius: '30px',
@@ -236,23 +236,26 @@ function App() {
 
           {report && report.checks && (
             <div className="mt-8">
-              <div className="mb-4">
+              <div className="mb-4 text-center">
                 <h3 className="text-xl font-bold text-gray-800">
                   🔍 {report.domain}
                 </h3>
                 <p className="text-sm text-gray-500">Report generated at {new Date().toLocaleString()}</p>
               </div>
 
-              <div className="grid gap-3">
+              <div className="space-y-2">
                 {report.checks.map((check: any, index: number) => {
-                  const style = getColorStyle(check.color)
+                  const style = colorMap[check.color] || colorMap.gray
                   return (
                     <div
                       key={index}
-                      className={`flex items-center justify-between p-4 rounded-lg border ${style.border} ${style.bg}`}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${style.bg}`}
+                      style={{
+                        border: '2px dashed #2f7a4f'
+                      }}
                     >
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{style.label}</span>
+                        <span className="text-xl">{style.label}</span>
                         <div>
                           <p className={`font-semibold ${style.text}`}>
                             {check.category}: {check.name}
@@ -275,7 +278,7 @@ function App() {
 
               <button
                 onClick={() => setReport(null)}
-                className="mt-6 text-[#2f7a4f] text-lg font-bold hover:underline"
+                className="mt-6 text-[#2f7a4f] text-lg font-bold hover:underline w-full text-center"
               >
                 Clear Results
               </button>
