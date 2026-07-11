@@ -1,4 +1,3 @@
-
 import ShieldLogo from '../components/ShieldLogo'
 
 interface HowItWorksProps {
@@ -89,7 +88,10 @@ export default function HowItWorks({ language, onBack }: HowItWorksProps) {
   const t = translations[language]
 
   return (
-    <div className="min-h-screen bg-[#fcfaf5] p-4 border-[12px] border-[#2f7a4f]">
+    <div 
+      className="min-h-screen bg-[#fcfaf5] p-4 border-[12px] border-[#2f7a4f]"
+      dir={language === 'ar' ? 'rtl' : 'ltr'}
+    >
       <div className="max-w-3xl mx-auto">
         <button
           onClick={onBack}

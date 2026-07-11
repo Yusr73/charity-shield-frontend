@@ -57,12 +57,26 @@ export default function Contact({ language, onBack }: ContactProps) {
     setError(null)
 
     try {
-      // TODO: Add your email sending logic here
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      setSent(true)
-      setName('')
-      setEmail('')
-      setMessage('')
+      const response = await fetch('https://formspree.io/f/xaqrwqrv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          message: message.trim()
+        }),
+      })
+
+      if (response.ok) {
+        setSent(true)
+        setName('')
+        setEmail('')
+        setMessage('')
+      } else {
+        setError(t.error)
+      }
     } catch (err) {
       setError(t.error)
     } finally {
@@ -71,7 +85,10 @@ export default function Contact({ language, onBack }: ContactProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#fcfaf5] p-4 border-[12px] border-[#2f7a4f]">
+    <div 
+      className="min-h-screen bg-[#fcfaf5] p-4 border-[12px] border-[#2f7a4f]"
+      dir={language === 'ar' ? 'rtl' : 'ltr'}
+    >
       <div className="max-w-2xl mx-auto">
         <button
           onClick={onBack}
