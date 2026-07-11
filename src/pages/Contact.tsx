@@ -3,6 +3,7 @@ import ShieldLogo from '../components/ShieldLogo'
 
 interface ContactProps {
   language: 'en' | 'ar'
+  onBack: () => void
 }
 
 const translations = {
@@ -36,7 +37,7 @@ const translations = {
   }
 }
 
-export default function Contact({ language }: ContactProps) {
+export default function Contact({ language, onBack }: ContactProps) {
   const t = translations[language]
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -56,8 +57,7 @@ export default function Contact({ language }: ContactProps) {
     setError(null)
 
     try {
-      // You can integrate with Formspree, Resend, or your Worker here
-      // For now, we'll simulate sending
+      // TODO: Add your email sending logic here
       await new Promise(resolve => setTimeout(resolve, 1500))
       setSent(true)
       setName('')
@@ -73,9 +73,12 @@ export default function Contact({ language }: ContactProps) {
   return (
     <div className="min-h-screen bg-[#fcfaf5] p-4 border-[12px] border-[#2f7a4f]">
       <div className="max-w-2xl mx-auto">
-        <a href="/" className="text-[#2f7a4f] font-bold hover:underline inline-block mb-6">
+        <button
+          onClick={onBack}
+          className="text-[#2f7a4f] font-bold hover:underline inline-block mb-6 cursor-pointer text-lg"
+        >
           {t.back}
-        </a>
+        </button>
 
         <div className="flex items-center gap-3 mb-4">
           <ShieldLogo className="w-10 h-10" />

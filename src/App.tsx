@@ -630,14 +630,14 @@ function App() {
           >
             <button
               onClick={() => setPage('howitworks')}
-              className="text-[#2f7a4f] mx-2 font-bold hover:underline"
+              className="text-[#2f7a4f] mx-2 font-bold hover:underline cursor-pointer"
             >
               {t.howItWorks}
             </button>
             <span className="text-[#2f7a4f]">✦</span>
             <button
               onClick={() => setPage('contact')}
-              className="text-[#2f7a4f] mx-2 font-bold hover:underline"
+              className="text-[#2f7a4f] mx-2 font-bold hover:underline cursor-pointer"
             >
               {t.contact}
             </button>
