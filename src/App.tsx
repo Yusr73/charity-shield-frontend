@@ -230,12 +230,14 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'X-API-Key': import.meta.env.VITE_API_KEY,
         },
         body: JSON.stringify({ url: finalUrl }),
       })
 
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`)
+        const errorData = await response.json()
+        throw new Error(errorData.error || `API error: ${response.status}`)
       }
 
       const data = await response.json()
