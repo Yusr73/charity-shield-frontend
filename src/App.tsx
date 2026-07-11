@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import ShieldLogo from './components/ShieldLogo'
 
 type Language = 'en' | 'ar'
@@ -19,11 +19,25 @@ const translations = {
     privacy: 'Privacy',
     contact: 'Contact',
     language: 'العربية',
-    // Report section translations
     reportGenerated: 'Report generated at',
     clearResults: 'Clear Results',
     analyzing: 'Analyzing charity website...',
-    error: 'Error'
+    error: 'Error',
+    // Comments section
+    commentsTitle: '💬 Community Comments',
+    commentsPlaceholder: 'Share your experience with this charity...',
+    commentsName: 'Your name',
+    commentsEmail: 'Your email',
+    commentsOrganization: 'Organization (optional)',
+    commentsButton: 'Submit Comment',
+    commentsSending: 'Submitting...',
+    commentsSent: '✅ Your comment has been submitted.',
+    commentsError: 'Failed to submit comment. Please try again.',
+    commentsEmpty: 'No comments yet. Be the first to share your experience.',
+    commentsLoadError: 'Failed to load comments.',
+    commentsEmailInvalid: 'Please enter a valid email address.',
+    commentsLengthError: 'Comment must be at least 10 characters.',
+    commentsNameRequired: 'Please enter your name.'
   },
   ar: {
     title: 'درع الخيرية',
@@ -40,15 +54,28 @@ const translations = {
     privacy: 'الخصوصية',
     contact: 'اتصل بنا',
     language: 'English',
-    // Report section translations
     reportGenerated: 'تم إنشاء التقرير في',
     clearResults: 'مسح النتائج',
     analyzing: 'جاري تحليل موقع الجمعية الخيرية...',
-    error: 'خطأ'
+    error: 'خطأ',
+    // Comments section
+    commentsTitle: '💬 تعليقات المجتمع',
+    commentsPlaceholder: 'شارك تجربتك مع هذه الجمعية الخيرية...',
+    commentsName: 'اسمك',
+    commentsEmail: 'بريدك الإلكتروني',
+    commentsOrganization: 'المنظمة (اختياري)',
+    commentsButton: 'إرسال التعليق',
+    commentsSending: 'جاري الإرسال...',
+    commentsSent: '✅ تم إرسال تعليقك.',
+    commentsError: 'فشل إرسال التعليق. يرجى المحاولة مرة أخرى.',
+    commentsEmpty: 'لا توجد تعليقات بعد. كن أول من يشارك تجربته.',
+    commentsLoadError: 'فشل تحميل التعليقات.',
+    commentsEmailInvalid: 'يرجى إدخال بريد إلكتروني صحيح.',
+    commentsLengthError: 'يجب أن يكون التعليق 10 أحرف على الأقل.',
+    commentsNameRequired: 'يرجى إدخال اسمك.'
   }
 }
 
-// Color mapping for display (same for both languages)
 const colorMap: Record<string, { label: string; bg: string; text: string }> = {
   green: { label: '🟢', bg: 'bg-green-50', text: 'text-green-700' },
   yellow: { label: '🟡', bg: 'bg-yellow-50', text: 'text-yellow-700' },
@@ -57,13 +84,21 @@ const colorMap: Record<string, { label: string; bg: string; text: string }> = {
   gray: { label: '⚪', bg: 'bg-gray-50', text: 'text-gray-500' }
 }
 
-// Check category translations
 const categoryTranslations: Record<string, { en: string; ar: string }> = {
   'Domain': { en: 'Domain', ar: 'المجال' },
   'Security': { en: 'Security', ar: 'الأمان' },
   'Presence': { en: 'Presence', ar: 'الحضور' },
   'Registration': { en: 'Registration', ar: 'التسجيل' },
   'Content': { en: 'Content', ar: 'المحتوى' }
+}
+
+interface Comment {
+  id: number;
+  name: string;
+  email: string;
+  organization: string | null;
+  comment: string;
+  created_at: string;
 }
 
 function App() {
@@ -74,8 +109,44 @@ function App() {
   const [report, setReport] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
 
+  // Comments state
+  const [comments, setComments] = useState<Comment[]>([])
+  const [commentsLoading, setCommentsLoading] = useState(false)
+  const [commentsError, setCommentsError] = useState<string | null>(null)
+  const [commentName, setCommentName] = useState('')
+  const [commentEmail, setCommentEmail] = useState('')
+  const [commentOrganization, setCommentOrganization] = useState('')
+  const [commentText, setCommentText] = useState('')
+  const [commentSubmitting, setCommentSubmitting] = useState(false)
+  const [commentSubmitted, setCommentSubmitted] = useState(false)
+
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'ar' : 'en')
+  }
+
+  // Fetch comments when report is loaded
+  useEffect(() => {
+    if (report?.domain) {
+      fetchComments(report.domain)
+    }
+  }, [report])
+
+  const fetchComments = async (domain: string) => {
+    setCommentsLoading(true)
+    setCommentsError(null)
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/comments?domain=${domain}`)
+      if (!response.ok) {
+        throw new Error('Failed to fetch comments')
+      }
+      const data = await response.json()
+      setComments(data.comments || [])
+    } catch (err) {
+      setCommentsError(t.commentsLoadError)
+      console.error('Comments error:', err)
+    } finally {
+      setCommentsLoading(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,6 +170,8 @@ function App() {
     setIsLoading(true)
     setError(null)
     setReport(null)
+    setComments([])
+    setCommentSubmitted(false)
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/check`, {
@@ -124,11 +197,77 @@ function App() {
     }
   }
 
-  // Get translated category
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    // Validate
+    if (!commentName.trim()) {
+      alert(t.commentsNameRequired)
+      return
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(commentEmail)) {
+      alert(t.commentsEmailInvalid)
+      return
+    }
+    if (commentText.trim().length < 10) {
+      alert(t.commentsLengthError)
+      return
+    }
+
+    setCommentSubmitting(true)
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/comments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          domain: report.domain,
+          name: commentName.trim(),
+          email: commentEmail.trim(),
+          organization: commentOrganization.trim() || '',
+          comment: commentText.trim()
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Failed to submit comment')
+      }
+
+      setCommentSubmitted(true)
+      setCommentName('')
+      setCommentEmail('')
+      setCommentOrganization('')
+      setCommentText('')
+      // Refresh comments
+      await fetchComments(report.domain)
+
+    } catch (err) {
+      alert(err instanceof Error ? err.message : t.commentsError)
+    } finally {
+      setCommentSubmitting(false)
+    }
+  }
+
   const getCategoryTranslation = (category: string): string => {
     const cat = categoryTranslations[category]
     if (!cat) return category
     return language === 'ar' ? cat.ar : cat.en
+  }
+
+  const formatDate = (dateStr: string): string => {
+    try {
+      const date = new Date(dateStr)
+      return date.toLocaleDateString(language === 'en' ? 'en-US' : 'ar-EG', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    } catch {
+      return dateStr
+    }
   }
 
   return (
@@ -201,7 +340,7 @@ function App() {
             </button>
           </form>
 
-          <div className="flex justify-center items-center gap-6 mt-8 text-lg text-gray-700">
+          <div className="flex justify-center items-center gap-6 mt-8 text-lg text-gray-700 flex-wrap">
             <span
               className="px-4 py-1 whitespace-nowrap"
               style={{
@@ -301,6 +440,96 @@ function App() {
                     </div>
                   )
                 })}
+              </div>
+
+              {/* ============================================================
+                  COMMENTS SECTION
+                  ============================================================ */}
+              <div className="mt-6 p-6 border-2 border-dashed border-[#2f7a4f] rounded-lg bg-white">
+                <h4 className="text-lg font-bold text-gray-800 mb-1">
+                  {t.commentsTitle}
+                </h4>
+
+                {/* Comments list */}
+                {commentsLoading ? (
+                  <p className="text-gray-500 text-sm">Loading comments...</p>
+                ) : commentsError ? (
+                  <p className="text-red-500 text-sm">{commentsError}</p>
+                ) : comments.length === 0 ? (
+                  <p className="text-gray-500 text-sm">{t.commentsEmpty}</p>
+                ) : (
+                  <div className="max-h-60 overflow-y-auto mb-4 space-y-3">
+                    {comments.map((c) => (
+                      <div key={c.id} className="border-b border-gray-100 pb-2">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-semibold text-gray-800">{c.name}</p>
+                            <p className="text-xs text-gray-400">{c.email}</p>
+                            {c.organization && (
+                              <p className="text-xs text-gray-400">{c.organization}</p>
+                            )}
+                          </div>
+                          <span className="text-xs text-gray-400">
+                            {formatDate(c.created_at)}
+                          </span>
+                        </div>
+                        <p className="text-gray-700 mt-1">{c.comment}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Add comment form */}
+                {commentSubmitted ? (
+                  <p className="text-green-600 font-bold">{t.commentsSent}</p>
+                ) : (
+                  <form onSubmit={handleCommentSubmit} className="mt-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                      <input
+                        type="text"
+                        value={commentName}
+                        onChange={(e) => setCommentName(e.target.value)}
+                        placeholder={t.commentsName}
+                        className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
+                        required
+                        disabled={commentSubmitting}
+                      />
+                      <input
+                        type="email"
+                        value={commentEmail}
+                        onChange={(e) => setCommentEmail(e.target.value)}
+                        placeholder={t.commentsEmail}
+                        className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
+                        required
+                        disabled={commentSubmitting}
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      value={commentOrganization}
+                      onChange={(e) => setCommentOrganization(e.target.value)}
+                      placeholder={t.commentsOrganization}
+                      className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f] mb-3"
+                      disabled={commentSubmitting}
+                    />
+                    <textarea
+                      value={commentText}
+                      onChange={(e) => setCommentText(e.target.value)}
+                      placeholder={t.commentsPlaceholder}
+                      className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
+                      rows={3}
+                      required
+                      disabled={commentSubmitting}
+                    />
+                    <button
+                      type="submit"
+                      disabled={commentSubmitting || !commentName.trim() || !commentEmail.trim() || commentText.trim().length < 10}
+                      className="mt-3 px-6 py-2 bg-[#2f7a4f] text-white font-bold rounded-lg hover:bg-[#1e5a38] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {commentSubmitting ? t.commentsSending : t.commentsButton}
+                    </button>
+                  </form>
+                )}
               </div>
 
               <button
