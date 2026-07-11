@@ -265,269 +265,298 @@ function App() {
   }
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center p-4 border-[12px] border-[#2f7a4f]"
-      dir={language === 'ar' ? 'rtl' : 'ltr'}
-    >
-      <div className="w-full max-w-2xl bg-[#fcfaf5] rounded-3xl p-8 relative"
-        style={{
-          boxShadow: '8px 8px 0 #2f7a4f',
-          border: '3px solid #2f7a4f'
-        }}
+    <>
+      <style>{`
+        @keyframes glowPulse {
+          0%, 100% {
+            box-shadow: 0 0 30px rgba(47, 122, 79, 0.15), 0 0 60px rgba(47, 122, 79, 0.05);
+          }
+          50% {
+            box-shadow: 0 0 50px rgba(47, 122, 79, 0.3), 0 0 80px rgba(47, 122, 79, 0.1);
+          }
+        }
+        @keyframes gradientMove {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+      `}</style>
+
+      <div 
+        className="min-h-screen flex items-center justify-center p-4 border-[12px] border-[#2f7a4f]"
+        dir={language === 'ar' ? 'rtl' : 'ltr'}
       >
-        <header className="flex justify-between items-center mb-6 relative">
-          <div className="flex items-center gap-3">
-            <ShieldLogo className="w-8 h-8" />
-            <h1 className="text-3xl font-bold text-[#2f7a4f]">
-              {t.title}
-            </h1>
-          </div>
-          <button
-            onClick={toggleLanguage}
-            className="px-4 py-1 text-[#2f7a4f] text-lg"
-            style={{
-              border: '2px dashed #2f7a4f',
-              borderRadius: '20px'
-            }}
-          >
-            {t.language}
-          </button>
-        </header>
-
-        <main>
-          <h2 className="text-2xl text-gray-800 mb-1">
-            {t.subtitle}
-          </h2>
-          <p className="text-gray-600 mb-6 text-lg">
-            {t.description}
-          </p>
-
-          <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
-            <div className="relative w-full max-w-md">
-              <span className="absolute left-4 top-3 text-xl text-[#2f7a4f]">🔍</span>
-              <input
-                type="text"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder={t.placeholder}
-                disabled={isLoading}
-                className="w-full pl-12 pr-4 py-3 bg-white text-lg"
-                style={{
-                  border: '3px dashed #2f7a4f',
-                  borderRadius: '16px',
-                  outline: 'none',
-                  boxShadow: '4px 4px 0 rgba(47, 122, 79, 0.2)'
-                }}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-8 py-3 bg-[#2f7a4f] text-white text-xl font-bold"
-              style={{
-                borderRadius: '50px',
-                border: '3px solid #1e5a38',
-                boxShadow: '6px 6px 0 #1e5a38'
-              }}
-            >
-              {isLoading ? t.checking : t.button}
-            </button>
-          </form>
-
-          {/* Disclaimer Section - Enhanced with glow and link */}
-          <div className="mt-8 p-5 border-2 border-[#2f7a4f] rounded-xl bg-[#fcfaf5] relative overflow-hidden"
-            style={{
-              boxShadow: '0 0 20px rgba(47, 122, 79, 0.15), inset 0 0 30px rgba(47, 122, 79, 0.03)'
-            }}
-          >
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2f7a4f] via-[#4CAF50] to-[#2f7a4f]"></div>
-            <p className="text-center text-sm text-gray-700 leading-relaxed">
-              {t.disclaimer}
-            </p>
-            <div className="text-center mt-3">
-              <a 
-                href="#" 
-                className="text-sm text-[#2f7a4f] font-semibold hover:underline inline-flex items-center gap-1"
-              >
-                {t.howItWorks} →
-              </a>
-            </div>
-          </div>
-
-          {isLoading && (
-            <div className="mt-8 text-center">
-              <p className="text-gray-600 text-lg">{t.analyzing}</p>
-              <div className="mt-2 flex justify-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#2f7a4f] border-t-transparent"></div>
-              </div>
-            </div>
-          )}
-
-          {error && (
-            <div className="mt-8 p-4 border-2 border-red-300 rounded-lg bg-red-50 text-red-700">
-              <p className="font-bold">{t.error}</p>
-              <p>{error}</p>
-            </div>
-          )}
-
-          {report && report.checks && (
-            <div className="mt-8">
-              <div className="mb-4 text-center">
-                <h3 className="text-xl font-bold text-gray-800">
-                  🔍 {report.domain}
-                </h3>
-                <p className="text-sm text-gray-500">{t.reportGenerated} {new Date().toLocaleString()}</p>
-              </div>
-
-              <div className="space-y-2">
-                {report.checks.map((check: any, index: number) => {
-                  const style = colorMap[check.color] || colorMap.gray
-                  const categoryTrans = getCategoryTranslation(check.category)
-                  return (
-                    <div
-                      key={index}
-                      className={`flex items-center justify-between p-3 rounded-lg border ${style.bg}`}
-                      style={{
-                        border: '2px dashed #2f7a4f'
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{style.label}</span>
-                        <div>
-                          <p className={`font-semibold ${style.text}`}>
-                            {categoryTrans}: {check.name}
-                          </p>
-                          <p className="text-sm text-gray-600">{check.meaning}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <span className={`font-bold ${style.text}`}>
-                          {check.value}
-                        </span>
-                        {check.details && (
-                          <p className="text-xs text-gray-400">{check.details}</p>
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              {/* ============================================================
-                  COMMENTS SECTION
-                  ============================================================ */}
-              <div className="mt-6 p-6 border-2 border-dashed border-[#2f7a4f] rounded-lg bg-white">
-                <h4 className="text-lg font-bold text-gray-800 mb-1">
-                  {t.commentsTitle}
-                </h4>
-
-                {/* Comments list */}
-                {commentsLoading ? (
-                  <p className="text-gray-500 text-sm">Loading comments...</p>
-                ) : commentsError ? (
-                  <p className="text-red-500 text-sm">{commentsError}</p>
-                ) : comments.length === 0 ? (
-                  <p className="text-gray-500 text-sm">{t.commentsEmpty}</p>
-                ) : (
-                  <div className="max-h-60 overflow-y-auto mb-4 space-y-3">
-                    {comments.map((c) => (
-                      <div key={c.id} className="border-b border-gray-100 pb-2">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="font-semibold text-gray-800">{c.name}</p>
-                            <p className="text-xs text-gray-400">{c.email}</p>
-                            {c.organization && (
-                              <p className="text-xs text-gray-400">{c.organization}</p>
-                            )}
-                          </div>
-                          <span className="text-xs text-gray-400">
-                            {formatDate(c.created_at)}
-                          </span>
-                        </div>
-                        <p className="text-gray-700 mt-1">{c.comment}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Add comment form */}
-                {commentSubmitted ? (
-                  <p className="text-green-600 font-bold">{t.commentsSent}</p>
-                ) : (
-                  <form onSubmit={handleCommentSubmit} className="mt-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                      <input
-                        type="text"
-                        value={commentName}
-                        onChange={(e) => setCommentName(e.target.value)}
-                        placeholder={t.commentsName}
-                        className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
-                        required
-                        disabled={commentSubmitting}
-                      />
-                      <input
-                        type="email"
-                        value={commentEmail}
-                        onChange={(e) => setCommentEmail(e.target.value)}
-                        placeholder={t.commentsEmail}
-                        className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
-                        required
-                        disabled={commentSubmitting}
-                      />
-                    </div>
-                    <input
-                      type="text"
-                      value={commentOrganization}
-                      onChange={(e) => setCommentOrganization(e.target.value)}
-                      placeholder={t.commentsOrganization}
-                      className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f] mb-3"
-                      disabled={commentSubmitting}
-                    />
-                    <textarea
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      placeholder={t.commentsPlaceholder}
-                      className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
-                      rows={3}
-                      required
-                      disabled={commentSubmitting}
-                    />
-                    <button
-                      type="submit"
-                      disabled={commentSubmitting || !commentName.trim() || !commentEmail.trim() || commentText.trim().length < 10}
-                      className="mt-3 px-6 py-2 bg-[#2f7a4f] text-white font-bold rounded-lg hover:bg-[#1e5a38] disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {commentSubmitting ? t.commentsSending : t.commentsButton}
-                    </button>
-                  </form>
-                )}
-              </div>
-
-              <button
-                onClick={() => setReport(null)}
-                className="mt-6 text-[#2f7a4f] text-lg font-bold hover:underline w-full text-center"
-              >
-                {t.clearResults}
-              </button>
-            </div>
-          )}
-        </main>
-
-        <footer className="mt-8 pt-4 text-center text-gray-600 text-lg"
+        <div className="w-full max-w-2xl bg-[#fcfaf5] rounded-3xl p-8 relative"
           style={{
-            borderTop: '2px dashed #ccc'
+            boxShadow: '8px 8px 0 #2f7a4f',
+            border: '3px solid #2f7a4f'
           }}
         >
-          <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
-            {t.howItWorks}
-          </a>
-          <span className="text-[#2f7a4f]">✦</span>
-          <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
-            {t.contact}
-          </a>
-        </footer>
+          <header className="flex justify-between items-center mb-6 relative">
+            <div className="flex items-center gap-3">
+              <ShieldLogo className="w-8 h-8" />
+              <h1 className="text-3xl font-bold text-[#2f7a4f]">
+                {t.title}
+              </h1>
+            </div>
+            <button
+              onClick={toggleLanguage}
+              className="px-4 py-1 text-[#2f7a4f] text-lg"
+              style={{
+                border: '2px dashed #2f7a4f',
+                borderRadius: '20px'
+              }}
+            >
+              {t.language}
+            </button>
+          </header>
+
+          <main>
+            <h2 className="text-2xl text-gray-800 mb-1">
+              {t.subtitle}
+            </h2>
+            <p className="text-gray-600 mb-6 text-lg">
+              {t.description}
+            </p>
+
+            <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4">
+              <div className="relative w-full max-w-md">
+                <span className="absolute left-4 top-3 text-xl text-[#2f7a4f]">🔍</span>
+                <input
+                  type="text"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder={t.placeholder}
+                  disabled={isLoading}
+                  className="w-full pl-12 pr-4 py-3 bg-white text-lg"
+                  style={{
+                    border: '3px dashed #2f7a4f',
+                    borderRadius: '16px',
+                    outline: 'none',
+                    boxShadow: '4px 4px 0 rgba(47, 122, 79, 0.2)'
+                  }}
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="px-8 py-3 bg-[#2f7a4f] text-white text-xl font-bold"
+                style={{
+                  borderRadius: '50px',
+                  border: '3px solid #1e5a38',
+                  boxShadow: '6px 6px 0 #1e5a38'
+                }}
+              >
+                {isLoading ? t.checking : t.button}
+              </button>
+            </form>
+
+            {/* Disclaimer Section - Enhanced with glow */}
+            <div 
+              className="mt-8 p-5 border-2 border-[#2f7a4f] rounded-xl bg-[#f0f9f2] relative overflow-hidden"
+              style={{
+                animation: 'glowPulse 3s ease-in-out infinite',
+                boxShadow: '0 0 30px rgba(47, 122, 79, 0.15), 0 0 60px rgba(47, 122, 79, 0.05), inset 0 0 30px rgba(47, 122, 79, 0.03)'
+              }}
+            >
+              {/* Animated gradient top bar */}
+              <div 
+                className="absolute top-0 left-0 w-full h-1"
+                style={{
+                  background: 'linear-gradient(90deg, #2f7a4f, #4CAF50, #2f7a4f)',
+                  backgroundSize: '200% 100%',
+                  animation: 'gradientMove 3s ease-in-out infinite'
+                }}
+              ></div>
+
+              <div className="relative z-10 flex items-start gap-3">
+                <span className="text-3xl flex-shrink-0 mt-0.5">🛡️</span>
+                <div>
+                  <p className="text-sm text-gray-700 leading-relaxed font-medium">
+                    {t.disclaimer}
+                  </p>
+                  <div className="mt-3">
+                    <a 
+                      href="#" 
+                      className="text-sm text-[#2f7a4f] font-bold hover:underline inline-flex items-center gap-1 transition-colors hover:text-[#1e5a38]"
+                    >
+                      {t.howItWorks} →
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {isLoading && (
+              <div className="mt-8 text-center">
+                <p className="text-gray-600 text-lg">{t.analyzing}</p>
+                <div className="mt-2 flex justify-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-[#2f7a4f] border-t-transparent"></div>
+                </div>
+              </div>
+            )}
+
+            {error && (
+              <div className="mt-8 p-4 border-2 border-red-300 rounded-lg bg-red-50 text-red-700">
+                <p className="font-bold">{t.error}</p>
+                <p>{error}</p>
+              </div>
+            )}
+
+            {report && report.checks && (
+              <div className="mt-8">
+                <div className="mb-4 text-center">
+                  <h3 className="text-xl font-bold text-gray-800">
+                    🔍 {report.domain}
+                  </h3>
+                  <p className="text-sm text-gray-500">{t.reportGenerated} {new Date().toLocaleString()}</p>
+                </div>
+
+                <div className="space-y-2">
+                  {report.checks.map((check: any, index: number) => {
+                    const style = colorMap[check.color] || colorMap.gray
+                    const categoryTrans = getCategoryTranslation(check.category)
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-center justify-between p-3 rounded-lg border ${style.bg}`}
+                        style={{
+                          border: '2px dashed #2f7a4f'
+                        }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-xl">{style.label}</span>
+                          <div>
+                            <p className={`font-semibold ${style.text}`}>
+                              {categoryTrans}: {check.name}
+                            </p>
+                            <p className="text-sm text-gray-600">{check.meaning}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className={`font-bold ${style.text}`}>
+                            {check.value}
+                          </span>
+                          {check.details && (
+                            <p className="text-xs text-gray-400">{check.details}</p>
+                          )}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+
+                {/* Comments Section */}
+                <div className="mt-6 p-6 border-2 border-dashed border-[#2f7a4f] rounded-lg bg-white">
+                  <h4 className="text-lg font-bold text-gray-800 mb-1">
+                    {t.commentsTitle}
+                  </h4>
+
+                  {commentsLoading ? (
+                    <p className="text-gray-500 text-sm">Loading comments...</p>
+                  ) : commentsError ? (
+                    <p className="text-red-500 text-sm">{commentsError}</p>
+                  ) : comments.length === 0 ? (
+                    <p className="text-gray-500 text-sm">{t.commentsEmpty}</p>
+                  ) : (
+                    <div className="max-h-60 overflow-y-auto mb-4 space-y-3">
+                      {comments.map((c) => (
+                        <div key={c.id} className="border-b border-gray-100 pb-2">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="font-semibold text-gray-800">{c.name}</p>
+                              <p className="text-xs text-gray-400">{c.email}</p>
+                              {c.organization && (
+                                <p className="text-xs text-gray-400">{c.organization}</p>
+                              )}
+                            </div>
+                            <span className="text-xs text-gray-400">
+                              {formatDate(c.created_at)}
+                            </span>
+                          </div>
+                          <p className="text-gray-700 mt-1">{c.comment}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {commentSubmitted ? (
+                    <p className="text-green-600 font-bold">{t.commentsSent}</p>
+                  ) : (
+                    <form onSubmit={handleCommentSubmit} className="mt-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                        <input
+                          type="text"
+                          value={commentName}
+                          onChange={(e) => setCommentName(e.target.value)}
+                          placeholder={t.commentsName}
+                          className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
+                          required
+                          disabled={commentSubmitting}
+                        />
+                        <input
+                          type="email"
+                          value={commentEmail}
+                          onChange={(e) => setCommentEmail(e.target.value)}
+                          placeholder={t.commentsEmail}
+                          className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
+                          required
+                          disabled={commentSubmitting}
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        value={commentOrganization}
+                        onChange={(e) => setCommentOrganization(e.target.value)}
+                        placeholder={t.commentsOrganization}
+                        className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f] mb-3"
+                        disabled={commentSubmitting}
+                      />
+                      <textarea
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        placeholder={t.commentsPlaceholder}
+                        className="w-full p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2f7a4f]"
+                        rows={3}
+                        required
+                        disabled={commentSubmitting}
+                      />
+                      <button
+                        type="submit"
+                        disabled={commentSubmitting || !commentName.trim() || !commentEmail.trim() || commentText.trim().length < 10}
+                        className="mt-3 px-6 py-2 bg-[#2f7a4f] text-white font-bold rounded-lg hover:bg-[#1e5a38] disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {commentSubmitting ? t.commentsSending : t.commentsButton}
+                      </button>
+                    </form>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => setReport(null)}
+                  className="mt-6 text-[#2f7a4f] text-lg font-bold hover:underline w-full text-center"
+                >
+                  {t.clearResults}
+                </button>
+              </div>
+            )}
+          </main>
+
+          <footer className="mt-8 pt-4 text-center text-gray-600 text-lg"
+            style={{
+              borderTop: '2px dashed #ccc'
+            }}
+          >
+            <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
+              {t.howItWorks}
+            </a>
+            <span className="text-[#2f7a4f]">✦</span>
+            <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
+              {t.contact}
+            </a>
+          </footer>
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
