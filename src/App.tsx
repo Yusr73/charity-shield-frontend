@@ -12,7 +12,6 @@ const translations = {
     button: 'Check Charity',
     checking: 'Checking...',
     howItWorks: 'How it works',
-    privacy: 'Privacy',
     contact: 'Contact',
     language: 'العربية',
     reportGenerated: 'Report generated at',
@@ -45,7 +44,6 @@ const translations = {
     button: 'فحص الجمعية',
     checking: 'جاري الفحص...',
     howItWorks: 'كيف يعمل',
-    privacy: 'الخصوصية',
     contact: 'اتصل بنا',
     language: 'English',
     reportGenerated: 'تم إنشاء التقرير في',
@@ -336,11 +334,24 @@ function App() {
             </button>
           </form>
 
-          {/* Disclaimer Section - Replaces trust badges */}
-          <div className="mt-8 p-4 border-2 border-[#2f7a4f] rounded-lg bg-[#fcfaf5]">
+          {/* Disclaimer Section - Enhanced with glow and link */}
+          <div className="mt-8 p-5 border-2 border-[#2f7a4f] rounded-xl bg-[#fcfaf5] relative overflow-hidden"
+            style={{
+              boxShadow: '0 0 20px rgba(47, 122, 79, 0.15), inset 0 0 30px rgba(47, 122, 79, 0.03)'
+            }}
+          >
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#2f7a4f] via-[#4CAF50] to-[#2f7a4f]"></div>
             <p className="text-center text-sm text-gray-700 leading-relaxed">
               {t.disclaimer}
             </p>
+            <div className="text-center mt-3">
+              <a 
+                href="#" 
+                className="text-sm text-[#2f7a4f] font-semibold hover:underline inline-flex items-center gap-1"
+              >
+                {t.howItWorks} →
+              </a>
+            </div>
           </div>
 
           {isLoading && (
@@ -509,10 +520,6 @@ function App() {
         >
           <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
             {t.howItWorks}
-          </a>
-          <span className="text-[#2f7a4f]">✦</span>
-          <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
-            {t.privacy}
           </a>
           <span className="text-[#2f7a4f]">✦</span>
           <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
