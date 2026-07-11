@@ -1,4 +1,4 @@
-import React from 'react'
+
 import ShieldLogo from '../components/ShieldLogo'
 
 interface HowItWorksProps {
