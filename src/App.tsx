@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import ShieldLogo from './components/ShieldLogo'
+import HowItWorks from './pages/HowItWorks'
+import Contact from './pages/Contact'
 
 type Language = 'en' | 'ar'
+type Page = 'home' | 'howitworks' | 'contact'
 
 const translations = {
   en: {
@@ -153,6 +156,7 @@ interface Comment {
 
 function App() {
   const [language, setLanguage] = useState<Language>('en')
+  const [page, setPage] = useState<Page>('home')
   const t = translations[language]
   const [url, setUrl] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -334,6 +338,15 @@ function App() {
     }
   }
 
+  // --- PAGE ROUTING ---
+  if (page === 'howitworks') {
+    return <HowItWorks language={language} onBack={() => setPage('home')} />
+  }
+  if (page === 'contact') {
+    return <Contact language={language} onBack={() => setPage('home')} />
+  }
+
+  // --- HOME PAGE ---
   return (
     <>
       <style>{`
@@ -443,12 +456,12 @@ function App() {
                     {t.disclaimer}
                   </p>
                   <div className="mt-3">
-                    <a 
-                      href="#" 
+                    <button
+                      onClick={() => setPage('howitworks')}
                       className="text-sm text-[#2f7a4f] font-bold hover:underline inline-flex items-center gap-1 transition-colors hover:text-[#1e5a38]"
                     >
                       {t.howItWorks} →
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -615,13 +628,19 @@ function App() {
               borderTop: '2px dashed #ccc'
             }}
           >
-            <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
+            <button
+              onClick={() => setPage('howitworks')}
+              className="text-[#2f7a4f] mx-2 font-bold hover:underline"
+            >
               {t.howItWorks}
-            </a>
+            </button>
             <span className="text-[#2f7a4f]">✦</span>
-            <a href="#" className="text-[#2f7a4f] mx-2 font-bold">
+            <button
+              onClick={() => setPage('contact')}
+              className="text-[#2f7a4f] mx-2 font-bold hover:underline"
+            >
               {t.contact}
-            </a>
+            </button>
           </footer>
         </div>
       </div>
