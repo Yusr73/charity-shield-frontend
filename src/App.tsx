@@ -11,10 +11,6 @@ const translations = {
     placeholder: 'Enter charity website URL',
     button: 'Check Charity',
     checking: 'Checking...',
-    free: '100% free',
-    instant: 'Instant check',
-    private: 'No data stored',
-    global: 'Global',
     howItWorks: 'How it works',
     privacy: 'Privacy',
     contact: 'Contact',
@@ -37,7 +33,9 @@ const translations = {
     commentsLoadError: 'Failed to load comments.',
     commentsEmailInvalid: 'Please enter a valid email address.',
     commentsLengthError: 'Comment must be at least 10 characters.',
-    commentsNameRequired: 'Please enter your name.'
+    commentsNameRequired: 'Please enter your name.',
+    // Disclaimer
+    disclaimer: "This tool helps you verify charities. It should not stop you from donating. Protect yourself AND protect legitimate charities. We may make mistakes — always verify independently."
   },
   ar: {
     title: 'درع الخيرية',
@@ -46,10 +44,6 @@ const translations = {
     placeholder: 'أدخل رابط موقع الجمعية الخيرية',
     button: 'فحص الجمعية',
     checking: 'جاري الفحص...',
-    free: 'مجاني 100%',
-    instant: 'فحص فوري',
-    private: 'لا يتم تخزين البيانات',
-    global: 'عالمي',
     howItWorks: 'كيف يعمل',
     privacy: 'الخصوصية',
     contact: 'اتصل بنا',
@@ -72,7 +66,9 @@ const translations = {
     commentsLoadError: 'فشل تحميل التعليقات.',
     commentsEmailInvalid: 'يرجى إدخال بريد إلكتروني صحيح.',
     commentsLengthError: 'يجب أن يكون التعليق 10 أحرف على الأقل.',
-    commentsNameRequired: 'يرجى إدخال اسمك.'
+    commentsNameRequired: 'يرجى إدخال اسمك.',
+    // Disclaimer
+    disclaimer: "هذه الأداة تساعدك في التحقق من الجمعيات الخيرية. لا ينبغي أن تمنعك من التبرع. احمِ نفسك واحمِ الجمعيات الخيرية الحقيقية. قد نخطئ — تحقق دائماً بشكل مستقل."
   }
 }
 
@@ -340,47 +336,11 @@ function App() {
             </button>
           </form>
 
-          <div className="flex justify-center items-center gap-6 mt-8 text-lg text-gray-700 flex-wrap">
-            <span
-              className="px-4 py-1 whitespace-nowrap"
-              style={{
-                border: '2px dashed #2f7a4f',
-                borderRadius: '30px',
-                backgroundColor: 'rgba(47, 122, 79, 0.05)'
-              }}
-            >
-              {t.free}
-            </span>
-            <span
-              className="px-4 py-1 whitespace-nowrap"
-              style={{
-                border: '2px dashed #2f7a4f',
-                borderRadius: '30px',
-                backgroundColor: 'rgba(47, 122, 79, 0.05)'
-              }}
-            >
-              {t.instant}
-            </span>
-            <span
-              className="px-4 py-1 whitespace-nowrap"
-              style={{
-                border: '2px dashed #2f7a4f',
-                borderRadius: '30px',
-                backgroundColor: 'rgba(47, 122, 79, 0.05)'
-              }}
-            >
-              {t.private}
-            </span>
-            <span
-              className="px-4 py-1 whitespace-nowrap"
-              style={{
-                border: '2px dashed #2f7a4f',
-                borderRadius: '30px',
-                backgroundColor: 'rgba(47, 122, 79, 0.05)'
-              }}
-            >
-              {t.global}
-            </span>
+          {/* Disclaimer Section - Replaces trust badges */}
+          <div className="mt-8 p-4 border-2 border-[#2f7a4f] rounded-lg bg-[#fcfaf5]">
+            <p className="text-center text-sm text-gray-700 leading-relaxed">
+              {t.disclaimer}
+            </p>
           </div>
 
           {isLoading && (
